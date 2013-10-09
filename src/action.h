@@ -1,6 +1,7 @@
 #ifndef ACTION_H
 #define ACTION_H
 
+#include <tuple>
 #include <new>
 #include <cstddef>
 
@@ -12,6 +13,18 @@ namespace Gui
         virtual ~ActionParameterBase() {}
     };
 
+    template<typename... P>
+    class ActionParameter : public ActionParameterBase
+    {
+    public:
+        ActionParameter(P... value)
+            : m_parameters(value...)
+        {}
+
+        std::tuple<P...> m_parameters;
+    };
+
+
     class ActionBase
     {
     public:
@@ -19,86 +32,60 @@ namespace Gui
         virtual void operator() (const ActionParameterBase& value) = 0;
     };
 
-    template<class T>
+    template<typename T, typename Func, typename P, int N>
+    struct Caller;
+
+    template<typename T, typename Func, typename P>
+    struct Caller<T, Func, P, 1>
+    {
+        void operator() (T* o, Func f, const P& p)
+        {
+            (o->*f)(std::get<0>(p));
+        }
+    };
+
+    template<typename T, typename... P>
     class Action : public ActionBase
     {
     public:
-        Action(T* o, void (T::*m)(const ActionParameterBase&))
+        Action(T* o, void (T::*m)(P...))
             : m_object(o)
             , m_method(m)
         {}
 
         void operator() (const ActionParameterBase& value) override
         {
+            const ActionParameter<P...>& p = dynamic_cast<const ActionParameter<P...>&>(value);
             if (m_object && m_method)
-                (m_object->*m_method)(value);
+            {
+                constexpr int size = std::tuple_size<std::tuple<P...>>::value;
+                Caller<T, void (T::*)(P...), std::tuple<P...>, size> o;
+                o(m_object, m_method, p.m_parameters);
+            }
         }
 
     private:
         T* m_object;
-        void (T::*m_method)(const ActionParameterBase& value);
+        void (T::*m_method)(P...);
     };
 
     template<>
     class Action<void> : public ActionBase
     {
     public:
-        Action(void (*F)(const ActionParameterBase&))
+        Action(void (*F)(void))
             : m_function(F)
         {}
 
-        void operator() (const ActionParameterBase& value) override
+        void operator() (const ActionParameterBase&) override
         {
             if (m_function)
-                m_function(value);
+                m_function();
         }
 
     private:
-        void (*m_function)(const ActionParameterBase& value);
+        void (*m_function)();
     };
-
-    class ActionParameter0 : public ActionParameterBase
-    {};
-
-    template<class T1>
-    class ActionParameter1 : public ActionParameterBase
-    {
-    public:
-        ActionParameter1(const T1& _p1)
-            : p1(_p1)
-        {}
-
-        T1 p1;
-    };
-
-    template<class T1, class T2>
-    class ActionParameter2 : public ActionParameterBase
-    {
-    public:
-        ActionParameter2(const T1& _p1, const T2& _p2)
-            : p1(_p1)
-            , p2(_p2)
-        {}
-
-        T1 p1;
-        T2 p2;
-    };
-
-    template<class T1, class T2, class T3>
-    class ActionParameter3 : public ActionParameterBase
-    {
-    public:
-        ActionParameter3(const T1& _p1, const T2& _p2, const T3& _p3)
-            : p1(_p1)
-            , p2(_p2)
-            , p3(_p3)
-        {}
-
-        T1 p1;
-        T2 p2;
-        T3 p3;
-    };
-
 }
 
 #endif // ACTION_H

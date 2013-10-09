@@ -6,6 +6,7 @@
 namespace Gui
 {
     typedef hgeInputEvent Event;
+    class Animation;
 
     class DesktopAdapter
     {
@@ -22,6 +23,8 @@ namespace Gui
         virtual bool GetMouseState(int key) = 0;
         virtual int GetWindowWidth() = 0;
         virtual int GetWindowHeight() = 0;
+        virtual void AddAnimation(Animation* value) = 0;
+        virtual void RemoveAnimation(Animation* value) = 0;
     };
 }
 

@@ -4,9 +4,11 @@
 #include <vector>
 #include "signal.h"
 #include "desktop_adapter.h"
+#include "style.h"
 
 namespace Gui
 {
+    class WidgetAnimation;
     class RenderAdapter;
     class DesktopAdapter;
 
@@ -16,14 +18,19 @@ namespace Gui
         Widget(float x = 0, float y = 0, float width = 128, float height = 128, Widget* parent = nullptr);
         virtual ~Widget();
 
-        Signal MousePress;
-        Signal MouseRelease;
-        Signal MouseMove;
-        Signal KeyDown;
-        Signal KeyUp;
-        Signal MouseHoover;
-        Signal Resize;
-        Signal MouseWheel;
+        Signal SigMousePress;
+        Signal SigMouseRelease;
+        Signal SigMouseMove;
+        Signal SigKeyDown;
+        Signal SigKeyUp;
+        Signal SigMouseHoover;
+        Signal SigResize;
+        Signal SigMouseWheel;
+        Signal SigMouseEnter;
+        Signal SigMouseLeave;
+        Signal SigFocused;
+        Signal SigUnfocused;
+        Signal SigClicked;
 
         int Width() const;
         int Height() const;
@@ -40,7 +47,6 @@ namespace Gui
         /// Set position relative to parent.
         void SetLocalPosition(int x, int y);
 
-        virtual void Repaint(RenderAdapter* r);
         void Invalidate();
 
         /// x and y in the current widget coordinate system
@@ -52,26 +58,63 @@ namespace Gui
         void SetManager(DesktopAdapter* value);
         DesktopAdapter* GetManager() const;
 
-        void SetBackgroundColor(float r, float g, float b, float a);
-        void SetFontColor(float r, float g, float b, float a);
-
         void AddWidget(Widget* w);
         void RemoveWidget(Widget* w);
 
+        void SetStyle(const Style& value) { m_style = value; }
+        Style& GetStyle() { return m_style; }
+
         Widget* Parent() const { return m_parent; }
 
+        void MouseMove(const Event& e);
+        void MousePress(const Event& e);
+        void MouseRelease(const Event& e);
+        void KeyDown(const Event& e);
+        void KeyUp(const Event& e);
+        void MouseWheel(const Event& e);
+        void MouseHoover(const Event& e);
+        void MouseEnter(const Event& e);
+        void MouseLeave(const Event& e);
+        void MouseClicked(const Event& e);
+        void Focused(const Event& e);
+        void Unfocused(const Event& e);
+        void Repaint(RenderAdapter* r);
+        void Update(float dt);
+        bool IsFocused() const;
+        bool IsMouseOver() const;
+
+    protected:
+
+        virtual void OnMouseMove(const Event& e);
+        virtual void OnMousePress(const Event& e);
+        virtual void OnMouseRelease(const Event& e);
+        virtual void OnClicked(const Event& e);
+        virtual void OnKeyDown(const Event& e);
+        virtual void OnKeyUp(const Event& e);
+        virtual void OnMouseWheel(const Event& e);
+        virtual void OnMouseHoover(const Event& e);
+        virtual void OnResize(const Event& e);
+        virtual void OnMouseEnter(const Event& e);
+        virtual void OnMouseLeave(const Event& e);
+        virtual void OnFocused(const Event& e);
+        virtual void OnUnfocused(const Event& e);
+        virtual void OnRepaint(RenderAdapter* r);
+        virtual void OnUpdate(float dt);
+
     private:
-        DesktopAdapter* m_manager;
+        DesktopAdapter* m_manager = nullptr;
+        WidgetAnimation* m_animation = nullptr;
+        Style m_style;
         float m_x = 0;
         float m_y = 0;
         float m_width = 128;
         float m_height = 128;
-        float m_back_color[4] = {1, 1, 1, 1};
-        float m_font_color[4] = {0, 0, 0, 1};
         bool m_fixed = false;
         Widget* m_parent = nullptr;
         bool m_need_repaint = true;
-        std::vector<Widget*> m_children;
+        bool m_focused;
+        bool m_mouse_over;
+        std::vector<Widget*> m_children;        
     };
 }
 

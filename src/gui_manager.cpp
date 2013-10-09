@@ -5,6 +5,7 @@
 #include "gui_manager.h"
 #include "widget.h"
 #include "action.h"
+#include "widget_animation.h"
 
 namespace Gui
 {
@@ -44,11 +45,19 @@ namespace Gui
             }
         }
 
-        m_cursor_widget = GetWidget(m_x, m_y);
-        if (m_cursor_widget)
+        auto new_widget = GetWidget(m_x, m_y);
+        if (m_cursor_widget != new_widget)
         {
-            ActionParameter1<Event> p(e);
-            m_cursor_widget->MouseMove(p);
+            if (m_cursor_widget)
+                m_cursor_widget->MouseLeave(e);
+            if (new_widget)
+                new_widget->MouseEnter(e);
+            m_cursor_widget = new_widget;
+        }
+
+        if (m_cursor_widget)
+        {            
+            m_cursor_widget->MouseMove(e);
         }
     }
 
@@ -58,7 +67,16 @@ namespace Gui
         m_right_down = (e.key == HGEK_RBUTTON ? true : m_right_down);
         m_middle_down = (e.key == HGEK_MBUTTON ? true : m_middle_down);
 
-        m_focus = GetWidget(e.x, e.y);
+        auto new_focus = GetWidget(e.x, e.y);
+        if (new_focus != m_focus)
+        {
+            if (m_focus)
+                m_focus->Unfocused(e);
+            if (new_focus)
+                new_focus->Focused(e);
+            m_focus = new_focus;
+        }
+
         if (m_focus)
         {
             auto parent = m_focus;
@@ -69,8 +87,7 @@ namespace Gui
 
         if (m_cursor_widget)
         {
-            ActionParameter1<Event> p(e);
-            m_cursor_widget->MousePress(p);
+            m_cursor_widget->MousePress(e);
         }
     }
 
@@ -80,37 +97,39 @@ namespace Gui
         m_right_down = (e.key == HGEK_RBUTTON ? false : m_right_down);
         m_middle_down = (e.key == HGEK_MBUTTON ? false : m_middle_down);
 
-        if (m_cursor_widget)
+        auto w = GetWidget(e.x, e.y);
+        if (w && w == m_focus)
         {
-            ActionParameter1<Event> p(e);
-            m_cursor_widget->MouseRelease(p);
+            w->MouseClicked(e);
+        }
+
+        if (m_cursor_widget)
+        {            
+            m_cursor_widget->MouseRelease(e);
         }
     }
 
     void Manager::OnMouseWheel(const Event &e)
     {
         if (m_cursor_widget)
-        {
-            ActionParameter1<Event> p(e);
-            m_cursor_widget->MouseWheel(p);
+        {            
+            m_cursor_widget->MouseWheel(e);
         }
     }
 
     void Manager::OnKeyDown(const Event &e)
     {
         if (m_focus)
-        {
-            ActionParameter1<Event> p(e);
-            m_focus->KeyDown(p);
+        {            
+            m_focus->KeyDown(e);
         }
     }
 
     void Manager::OnKeyUp(const Event &e)
     {
         if (m_focus)
-        {
-            ActionParameter1<Event> p(e);
-            m_focus->KeyUp(p);
+        {            
+            m_focus->KeyUp(e);
         }
     }
 
@@ -182,5 +201,40 @@ namespace Gui
     int Manager::GetWindowHeight()
     {
         return m_hge->System_GetState(HGE_SCREENHEIGHT);
+    }
+
+    void Manager::Add(Animation *value)
+    {
+        auto it = std::find(m_animation.begin(), m_animation.end(), value);
+        if (it != m_animation.end())
+            return;
+        m_animation.push_back(value);
+    }
+
+    void Manager::Remove(Animation *value)
+    {
+        auto it = std::find(m_animation.begin(), m_animation.end(), value);
+        if (it == m_animation.end())
+            return;
+        m_animation.erase(it);
+    }
+
+    void Manager::AddAnimation(Animation* value)
+    {
+        Add(value);
+    }
+
+    void Manager::RemoveAnimation(Animation* value)
+    {
+        Remove(value);
+    }
+
+    void Manager::Update(float dt)
+    {
+        for (auto animation : m_animation)
+        {
+            if (animation->Active())
+                animation->Update(dt);
+        }
     }
 }

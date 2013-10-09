@@ -3,6 +3,7 @@
 #include "action.h"
 #include "widget.h"
 #include "desktop_adapter.h"
+#include "widget_animation.h"
 
 namespace Gui
 {
@@ -11,14 +12,18 @@ namespace Gui
         , m_y(y)
         , m_width(width)
         , m_height(height)
-        , m_parent(parent)
+        , m_parent(parent)        
     {
         if (m_parent)
-            m_parent->AddWidget(this);
+            m_parent->AddWidget(this);                
+        m_animation = new WidgetAnimation(this);
     }
 
     Widget::~Widget()
     {
+        delete m_animation;
+        m_animation = nullptr;
+
         if (m_parent)
             m_parent->RemoveWidget(this);
 
@@ -33,22 +38,6 @@ namespace Gui
     void Widget::Invalidate()
     {
         m_need_repaint = true;
-    }
-
-    void Widget::Repaint(RenderAdapter *r)
-    {
-        if (!m_need_repaint)
-            return;
-        r->PushSate();
-        r->SetColor(m_back_color[0], m_back_color[1], m_back_color[2]);
-        r->SetAlpha(m_back_color[3]);
-        r->DrawQuad(m_x, m_y, m_width, m_height);
-        r->Translate(m_x, m_y);
-        for (auto child : m_children)
-        {
-            child->Repaint(r);
-        }
-        r->PopState();
     }
 
     int Widget::Width() const
@@ -133,27 +122,17 @@ namespace Gui
     void Widget::SetManager(DesktopAdapter* value)
     {
         m_manager = value;
+        if (m_manager)
+        {
+            m_manager->AddAnimation(m_animation);
+            for (auto child : m_children)
+                child->SetManager(value);
+        }
     }
 
     DesktopAdapter* Widget::GetManager() const
     {
         return m_manager;
-    }
-
-    void Widget::SetBackgroundColor(float r, float g, float b, float a)
-    {
-        m_back_color[0] = r;
-        m_back_color[1] = g;
-        m_back_color[2] = b;
-        m_back_color[3] = a;
-    }
-
-    void Widget::SetFontColor(float r, float g, float b, float a)
-    {
-        m_font_color[0] = r;
-        m_font_color[1] = g;
-        m_font_color[2] = b;
-        m_font_color[3] = a;
     }
 
     void Widget::AddWidget(Widget* value)
@@ -172,5 +151,180 @@ namespace Gui
             return;
         m_children.erase(it);
     }
-}
 
+    void Widget::OnMouseMove(const Event& e)
+    {
+
+    }
+
+    void Widget::OnMousePress(const Event& e)
+    {
+
+    }
+
+    void Widget::OnMouseRelease(const Event& e)
+    {
+    }
+
+    void Widget::OnKeyDown(const Event& e)
+    {
+    }
+
+    void Widget::OnKeyUp(const Event& e)
+    {
+
+    }
+
+    void Widget::OnMouseWheel(const Event& e)
+    {
+
+    }
+
+    void Widget::OnMouseHoover(const Event& e)
+    {
+    }
+
+    void Widget::OnResize(const Event &e)
+    {
+    }
+
+    void Widget::OnMouseEnter(const Event &e)
+    {
+
+    }
+
+    void Widget::OnMouseLeave(const Event &e)
+    {
+
+    }
+
+    void Widget::OnFocused(const Event &e)
+    {
+
+    }
+
+    void Widget::OnUnfocused(const Event &e)
+    {
+
+    }
+
+    void Widget::OnRepaint(RenderAdapter *r)
+    {
+        if (!m_need_repaint)
+            return;
+        r->PushSate();
+        r->SetColor(m_style.back_color[0], m_style.back_color[1], m_style.back_color[2]);
+        r->SetAlpha(m_style.back_color[3]);
+        r->DrawQuad(m_x, m_y, m_width, m_height);
+        r->Translate(m_x, m_y);
+        for (auto child : m_children)
+        {
+            child->Repaint(r);
+        }
+        r->PopState();
+    }
+
+    void Widget::OnUpdate(float dt)
+    {
+
+    }
+
+    void Widget::OnClicked(const Event &e)
+    {}
+
+    void Widget::MouseMove(const Event& e)
+    {
+        SigMouseMove(ActionParameter<Event>(e));
+        OnMouseMove(e);
+    }
+
+    void Widget::MousePress(const Event& e)
+    {
+        SigMousePress(ActionParameter<Event>(e));
+        OnMousePress(e);
+    }
+
+    void Widget::MouseRelease(const Event& e)
+    {
+        SigMouseRelease(ActionParameter<Event>(e));
+        OnMouseRelease(e);
+    }
+
+    void Widget::KeyDown(const Event& e)
+    {
+        SigKeyDown(ActionParameter<Event>(e));
+        OnKeyDown(e);
+    }
+
+    void Widget::KeyUp(const Event& e)
+    {
+        SigKeyUp(ActionParameter<Event>(e));
+        OnKeyUp(e);
+    }
+
+    void Widget::MouseWheel(const Event& e)
+    {
+        SigMouseWheel(ActionParameter<Event>(e));
+        OnMouseWheel(e);
+    }
+
+    void Widget::MouseHoover(const Event& e)
+    {
+        SigMouseHoover(ActionParameter<Event>(e));
+        OnMouseHoover(e);
+    }
+
+    void Widget::MouseEnter(const Event& e)
+    {
+        m_mouse_over = true;
+        SigMouseEnter(ActionParameter<Event>(e));
+        OnMouseEnter(e);
+    }
+
+    void Widget::MouseLeave(const Event& e)
+    {
+        m_mouse_over = false;
+        SigMouseLeave(ActionParameter<Event>(e));
+        OnMouseLeave(e);
+    }
+
+    void Widget::Focused(const Event& e)
+    {
+        SigFocused(ActionParameter<Event>(e));
+        m_focused = true;
+        OnFocused(e);
+    }
+
+    void Widget::Repaint(RenderAdapter *r)
+    {
+        OnRepaint(r);
+    }
+
+    void Widget::Update(float dt)
+    {
+        OnUpdate(dt);
+    }
+
+    void Widget::Unfocused(const Event &e)
+    {
+        m_focused = false;
+        SigUnfocused(ActionParameter<Event>(e));
+        OnUnfocused(e);
+    }
+
+    bool Widget::IsFocused() const
+    {
+        return m_focused;
+    }
+
+    bool Widget::IsMouseOver() const
+    {
+        return m_mouse_over;
+    }
+
+    void Widget::MouseClicked(const Event& e)
+    {
+        SigClicked(ActionParameter<Event>(e));
+        OnClicked(e);
+    }
+}

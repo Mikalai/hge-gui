@@ -8,6 +8,7 @@ class HGE;
 
 namespace Gui
 {
+    class Animation;
     class Widget;
     class HgeRender;
 
@@ -27,10 +28,15 @@ namespace Gui
         bool GetMouseState(int key) override;
         int GetWindowWidth() override;
         int GetWindowHeight() override;
+        void AddAnimation(Animation* value) override;
+        void RemoveAnimation(Animation* value) override;
 
         void Add(Widget* value);
         void Remove(Widget* value);
+        void Add(Animation* value);
+        void Remove(Animation* value);
         void Repaint();
+        void Update(float dt);
 
     private:
         Widget* GetWidget(int x, int y);
@@ -50,6 +56,7 @@ namespace Gui
         /// Widget on wich mouse cursor is currently located
         Widget* m_cursor_widget = nullptr;
         std::list<Widget*> m_children;
+        std::list<Animation*> m_animation;
     };
 }
 

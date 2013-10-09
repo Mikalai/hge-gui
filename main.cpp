@@ -60,6 +60,7 @@ bool FrameFunc()
     // machines and video modes.
     float dt=hge->Timer_GetDelta();
 
+    g_manager->Update(dt);
     // Process keys
     if (hge->Input_GetKeyState(HGEK_ESCAPE)) return true;
     if (hge->Input_GetKeyState(HGEK_LEFT)) dx-=speed*dt;
@@ -110,22 +111,21 @@ bool RenderFunc()
     return false;
 }
 
+void CreateWidget()
+{
+    {
+        Gui::Widget* w = new Gui::Widget(100, 100, 200, 200);
+        Gui::Widget* w2 = new Gui::Widget(20, 20, 100, 40, w);
+        w2->SigMousePress.Connect(new Gui::Action<void>(CreateWidget));
+        g_manager->Add(w);
+    }
+}
+
 void InitGui()
 {
     g_manager = new Gui::Manager(hge);
-    {
-        Gui::Widget* w = new Gui::Widget(100, 100, 200, 200);
-        w->SetBackgroundColor(1, 0, 0, 1);
-        Gui::Widget* w2 = new Gui::Widget(20, 20, 100, 40, w);
-        g_manager->Add(w);
-    }
-
-    {
-        Gui::Widget* w = new Gui::Widget(100, 100, 200, 200);
-        w->SetBackgroundColor(0, 0, 1, 1);
-        Gui::Widget* w2 = new Gui::Widget(20, 20, 100, 40, w);
-        g_manager->Add(w);
-    }
+    CreateWidget();
+    CreateWidget();
 }
 
 int main(int argc, char *argv[])
