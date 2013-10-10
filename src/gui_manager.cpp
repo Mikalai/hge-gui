@@ -34,12 +34,12 @@ namespace Gui
     {
         m_prev_x = m_x;
         m_prev_y = m_y;
-        m_x = e.x;
-        m_y = e.y;
+        m_x = e.e.x;
+        m_y = e.e.y;
 
         if (m_left_down)
         {
-            if (m_focus)
+            if (m_focus && m_focus->Moveable())
             {
                 m_focus->SetLocalPosition(m_focus->LocalX() + (m_x - m_prev_x), m_focus->LocalY() + m_y - m_prev_y);
             }
@@ -63,11 +63,11 @@ namespace Gui
 
     void Manager::OnMousePress(const Event &e)
     {
-        m_left_down = (e.key == HGEK_LBUTTON ? true : m_left_down);
-        m_right_down = (e.key == HGEK_RBUTTON ? true : m_right_down);
-        m_middle_down = (e.key == HGEK_MBUTTON ? true : m_middle_down);
+        m_left_down = (e.e.key == HGEK_LBUTTON ? true : m_left_down);
+        m_right_down = (e.e.key == HGEK_RBUTTON ? true : m_right_down);
+        m_middle_down = (e.e.key == HGEK_MBUTTON ? true : m_middle_down);
 
-        auto new_focus = GetWidget(e.x, e.y);
+        auto new_focus = GetWidget(e.e.x, e.e.y);
         if (new_focus != m_focus)
         {
             if (m_focus)
@@ -93,11 +93,11 @@ namespace Gui
 
     void Manager::OnMouseRelease(const Event &e)
     {
-        m_left_down = (e.key == HGEK_LBUTTON ? false : m_left_down);
-        m_right_down = (e.key == HGEK_RBUTTON ? false : m_right_down);
-        m_middle_down = (e.key == HGEK_MBUTTON ? false : m_middle_down);
+        m_left_down = (e.e.key == HGEK_LBUTTON ? false : m_left_down);
+        m_right_down = (e.e.key == HGEK_RBUTTON ? false : m_right_down);
+        m_middle_down = (e.e.key == HGEK_MBUTTON ? false : m_middle_down);
 
-        auto w = GetWidget(e.x, e.y);
+        auto w = GetWidget(e.e.x, e.e.y);
         if (w && w == m_focus)
         {
             w->MouseClicked(e);

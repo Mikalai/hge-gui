@@ -5,19 +5,19 @@
 
 namespace Gui
 {
-    class ActionBase;
-    class ActionParameterBase;
+    class Action;
+    class ActionParameter;
 
     class Signal
     {
     public:
         ~Signal();
-        void Connect(ActionBase* value);
-        void Disconnect(ActionBase* value);
-        void operator () (const ActionParameterBase& value);
+        void Connect(Action* value);
+        void Disconnect(Action* value);
+        void operator () (const ActionParameter& value);
 
     private:
-        std::vector<ActionBase*> m_actions;
+        std::vector<Action*> m_actions;
     };
 }
 

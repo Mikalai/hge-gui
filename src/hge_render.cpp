@@ -19,6 +19,7 @@ namespace Gui
         : m_hge(hge)
     {
         cs = new RenderState;
+        m_font = new hgeFont("../data/font1.fnt");
     }
 
     HgeRender::~HgeRender()
@@ -98,9 +99,12 @@ namespace Gui
 
     void HgeRender::DrawText(float x, float y, const std::string& s)
     {
-        m_font->SetColor(FloatToDword(cs->r, cs->g, cs->b, cs->a));
-        m_font->SetScale(2);
-        m_font->Render(x, y, HGETEXT_LEFT, s.c_str());
+        if (m_font)
+        {
+            m_font->SetColor(FloatToDword(cs->r, cs->g, cs->b, cs->a));
+            m_font->SetScale(0.8);
+            m_font->Render(x, y, HGETEXT_LEFT, s.c_str());
+        }
     }
 
     void HgeRender::SetColor(float r, float g, float b)

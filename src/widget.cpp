@@ -16,7 +16,7 @@ namespace Gui
     {
         if (m_parent)
             m_parent->AddWidget(this);                
-        m_animation = new WidgetAnimation(this);
+        SetAnimation(new WidgetAnimation(this));
     }
 
     Widget::~Widget()
@@ -120,11 +120,17 @@ namespace Gui
     }
 
     void Widget::SetManager(DesktopAdapter* value)
-    {
+    {        
+        if (m_animation)
+        {
+            if (m_manager)
+                m_manager->RemoveAnimation(m_animation);
+            if (value)
+                value->AddAnimation(m_animation);
+        }
         m_manager = value;
         if (m_manager)
-        {
-            m_manager->AddAnimation(m_animation);
+        {            
             for (auto child : m_children)
                 child->SetManager(value);
         }
@@ -234,63 +240,81 @@ namespace Gui
 
     void Widget::MouseMove(const Event& e)
     {
-        SigMouseMove(ActionParameter<Event>(e));
+        SigMouseMove(Event(e));
         OnMouseMove(e);
     }
 
     void Widget::MousePress(const Event& e)
     {
-        SigMousePress(ActionParameter<Event>(e));
+        if (m_animation)
+        {
+            if (e.e.key == HGEK_LBUTTON)
+                m_animation->PlayMouseLeftDown(e);
+        }
+
+        SigMousePress(Event(e));
         OnMousePress(e);
     }
 
     void Widget::MouseRelease(const Event& e)
     {
-        SigMouseRelease(ActionParameter<Event>(e));
+        if (m_animation)
+        {
+            if (e.e.key == HGEK_LBUTTON)
+                m_animation->PlayMouseLeftUp(e);
+        }
+
+        SigMouseRelease(Event(e));
         OnMouseRelease(e);
     }
 
     void Widget::KeyDown(const Event& e)
     {
-        SigKeyDown(ActionParameter<Event>(e));
+        SigKeyDown(Event(e));
         OnKeyDown(e);
     }
 
     void Widget::KeyUp(const Event& e)
     {
-        SigKeyUp(ActionParameter<Event>(e));
+        SigKeyUp(Event(e));
         OnKeyUp(e);
     }
 
     void Widget::MouseWheel(const Event& e)
     {
-        SigMouseWheel(ActionParameter<Event>(e));
+        SigMouseWheel(Event(e));
         OnMouseWheel(e);
     }
 
     void Widget::MouseHoover(const Event& e)
     {
-        SigMouseHoover(ActionParameter<Event>(e));
+        SigMouseHoover(Event(e));
         OnMouseHoover(e);
     }
 
     void Widget::MouseEnter(const Event& e)
     {
+        if (m_animation)
+            m_animation->PlayMouseEnter(e);
         m_mouse_over = true;
-        SigMouseEnter(ActionParameter<Event>(e));
+        SigMouseEnter(Event(e));
         OnMouseEnter(e);
     }
 
     void Widget::MouseLeave(const Event& e)
     {
-        m_mouse_over = false;
-        SigMouseLeave(ActionParameter<Event>(e));
+        if (m_animation)
+            m_animation->PlayMouseLeave(e);
+        m_mouse_over = false;        
+        SigMouseLeave(Event(e));
         OnMouseLeave(e);
     }
 
     void Widget::Focused(const Event& e)
     {
-        SigFocused(ActionParameter<Event>(e));
+        if (m_animation)
+            m_animation->PlayFocused();
+        SigFocused(Event(e));
         m_focused = true;
         OnFocused(e);
     }
@@ -307,13 +331,15 @@ namespace Gui
 
     void Widget::Unfocused(const Event &e)
     {
+        if (m_animation)
+            m_animation->PlayUnfocused();
         m_focused = false;
-        SigUnfocused(ActionParameter<Event>(e));
+        SigUnfocused(Event(e));
         OnUnfocused(e);
     }
 
     bool Widget::IsFocused() const
-    {
+    {        
         return m_focused;
     }
 
@@ -323,8 +349,26 @@ namespace Gui
     }
 
     void Widget::MouseClicked(const Event& e)
-    {
-        SigClicked(ActionParameter<Event>(e));
+    {        
+        SigToggle(Event(e));
         OnClicked(e);
+    }
+
+    void Widget::SetAnimation(WidgetAnimation* animation)
+    {
+        if (m_animation)
+        {
+            if (m_manager)
+                m_manager->RemoveAnimation(m_animation);
+            delete m_animation;
+        }
+        m_animation = animation;
+        if (m_manager)
+            m_manager->AddAnimation(m_animation);
+    }
+
+    WidgetAnimation* Widget::GetAnimation() const
+    {
+        return m_animation;
     }
 }

@@ -24,7 +24,9 @@ SOURCES += main.cpp \
     src/hge_render.cpp \
     src/gui_manager.cpp \
     src/style.cpp \
-    src/widget_animation.cpp
+    src/widget_animation.cpp \
+    src/button.cpp \
+    src/text_line.cpp
 
 HEADERS += \
     src/action.h \
@@ -36,5 +38,7 @@ HEADERS += \
     src/desktop_adapter.h \
     src/gui_manager.h \
     src/style.h \
-    src/widget_animation.h
+    src/widget_animation.h \
+    src/button.h \
+    src/text_line.h
 

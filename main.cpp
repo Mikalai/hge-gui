@@ -113,10 +113,26 @@ bool RenderFunc()
 
 void CreateWidget()
 {
+    struct CreateWidgetAction : Gui::Action
+    {
+        CreateWidgetAction(void (*f)())
+            : function(f)
+        {}
+
+        void operator() (const Gui::ActionParameter&)
+        {
+            function();
+        }
+
+        void (*function)();
+    };
+
+
     {
         Gui::Widget* w = new Gui::Widget(100, 100, 200, 200);
-        Gui::Widget* w2 = new Gui::Widget(20, 20, 100, 40, w);
-        w2->SigMousePress.Connect(new Gui::Action<void>(CreateWidget));
+        Gui::Button* w2 = new Gui::Button(10, 10, 180, 20, "Button", w);
+        Gui::TextLine* w3 = new Gui::TextLine(10, 40, 180, 20, "Text", w);
+        w2->SigToggle.Connect(new CreateWidgetAction(CreateWidget));
         g_manager->Add(w);
     }
 }
@@ -124,7 +140,6 @@ void CreateWidget()
 void InitGui()
 {
     g_manager = new Gui::Manager(hge);
-    CreateWidget();
     CreateWidget();
 }
 

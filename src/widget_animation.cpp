@@ -3,8 +3,7 @@
 #include "widget_animation.h"
 
 namespace Gui
-{
-    float g_anim = 0.1f;
+{    
     void LinearInterpolate(const std::array<float, 4>& a, const std::array<float, 4>&b, float t, std::array<float, 4>& out)
     {
         float p1 = b[0] * t + a[0] * (1 - t);
@@ -19,11 +18,7 @@ namespace Gui
 
     WidgetAnimation::WidgetAnimation(Widget *w)
         : m_widget(w)
-    {
-        m_widget->SigFocused.Connect(new Action<WidgetAnimation, Event>(this, &WidgetAnimation::PlayFocused));
-        m_widget->SigMouseEnter.Connect(new Action<WidgetAnimation, Event>(this, &WidgetAnimation::PlayMouseEnter));
-        m_widget->SigMouseLeave.Connect(new Action<WidgetAnimation, Event>(this, &WidgetAnimation::PlayMouseLeave));
-        m_widget->SigUnfocused.Connect(new Action<WidgetAnimation, Event>(this, &WidgetAnimation::PlayUnfocused));
+    {    
     }
 
     void WidgetAnimation::Update(float dt)
@@ -41,7 +36,7 @@ namespace Gui
         }
     }
 
-    void WidgetAnimation::PlayMouseEnter(Event e)
+    void WidgetAnimation::PlayMouseEnter(const Event& e)
     {
         if (m_widget->IsFocused())
             return;
@@ -52,18 +47,19 @@ namespace Gui
         m_animation[MouseEnterAnimation].end = m_widget->GetStyle().back_color_moused;
     }
 
-    void WidgetAnimation::PlayMouseLeave(Event e)
-    {
-        if (m_widget->IsFocused())
-            return;
+    void WidgetAnimation::PlayMouseLeave(const Event& e)
+    {        
         m_animation[MouseLeaveAnimation].active = true;
         m_animation[MouseLeaveAnimation].duration = g_anim;
         m_animation[MouseLeaveAnimation].loop = false;
         m_animation[MouseLeaveAnimation].start = m_widget->GetStyle().back_color;
-        m_animation[MouseLeaveAnimation].end = m_widget->GetStyle().back_color_unfocused;
+        if (m_widget->IsFocused())
+            m_animation[MouseLeaveAnimation].end = m_widget->GetStyle().back_color_focused;
+        else
+            m_animation[MouseLeaveAnimation].end = m_widget->GetStyle().back_color_unfocused;
     }
 
-    void WidgetAnimation::PlayFocused(Event e)
+    void WidgetAnimation::PlayFocused()
     {
         m_animation[FocusedAnimation].active = true;
         m_animation[FocusedAnimation].duration = g_anim;
@@ -72,7 +68,7 @@ namespace Gui
         m_animation[FocusedAnimation].end = m_widget->GetStyle().back_color_focused;
     }
 
-    void WidgetAnimation::PlayUnfocused(Event e)
+    void WidgetAnimation::PlayUnfocused()
     {
         m_animation[UnfocusedAnimation].active = true;
         m_animation[UnfocusedAnimation].duration = g_anim;

@@ -2,10 +2,18 @@
 #define DESKTOP_ADAPTER_H
 
 #include <hge.h>
-
+#include "action.h"
 namespace Gui
 {
-    typedef hgeInputEvent Event;
+    struct Event : public ActionParameter
+    {
+        Event(const hgeInputEvent& _e)
+            : e(_e)
+        {}
+
+        hgeInputEvent e;
+    };
+
     class Animation;
 
     class DesktopAdapter

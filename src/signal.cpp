@@ -13,7 +13,7 @@ namespace Gui
         }
     }
 
-    void Signal::Connect(ActionBase* value)
+    void Signal::Connect(Action* value)
     {
         auto it = std::find(m_actions.begin(), m_actions.end(), value);
         if (it != m_actions.end())
@@ -21,7 +21,7 @@ namespace Gui
         m_actions.push_back(value);
     }
 
-    void Signal::Disconnect(ActionBase* value)
+    void Signal::Disconnect(Action* value)
     {
         auto it = std::find(m_actions.begin(), m_actions.end(), value);
         if (it == m_actions.end())
@@ -29,7 +29,7 @@ namespace Gui
         m_actions.erase(it);
     }
 
-    void Signal::operator () (const ActionParameterBase& value)
+    void Signal::operator () (const ActionParameter& value)
     {
         for (auto action : m_actions)
         {

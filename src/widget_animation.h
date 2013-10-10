@@ -8,6 +8,8 @@ namespace Gui
 {
     class Widget;
 
+    static const float g_anim = 0.1f;
+
     struct AnimationState
     {
         bool active = false;
@@ -34,6 +36,8 @@ namespace Gui
     static const int MouseEnterAnimation = 1;
     static const int MouseLeaveAnimation = 2;
     static const int UnfocusedAnimation = 3;
+    static const int MouseLeftDownAnimation = 4;
+    static const int MouseLeftUpAnimation = 5;
 
     class WidgetAnimation : public Animation
     {
@@ -41,16 +45,17 @@ namespace Gui
         WidgetAnimation(Widget* w);
         virtual ~WidgetAnimation() {}
 
-        virtual void Update(float dt);
-        virtual bool Active() const;
-        void PlayFocused(Event e);
-        void PlayMouseEnter(Event e);
-        void PlayMouseLeave(Event e);
-        void PlayUnfocused(Event e);
-    private:
+        void Update(float dt) override;
+        bool Active() const override;
+        virtual void PlayFocused();
+        virtual void PlayMouseEnter(const Event& e);
+        virtual void PlayMouseLeave(const Event& e);
+        virtual void PlayUnfocused();
+        virtual void PlayMouseLeftDown(const Event& e) {}
+        virtual void PlayMouseLeftUp(const Event& e) {}
+    protected:
 
-        AnimationState m_animation[4];
-
+        AnimationState m_animation[6];
         Widget* m_widget;
     };
 }

@@ -30,7 +30,7 @@ namespace Gui
         Signal SigMouseLeave;
         Signal SigFocused;
         Signal SigUnfocused;
-        Signal SigClicked;
+        Signal SigToggle;
 
         int Width() const;
         int Height() const;
@@ -54,6 +54,9 @@ namespace Gui
 
         void Fixed(bool value) { m_fixed = value; }
         bool Fixed() const { return m_fixed; }
+
+        void Moveable(bool value) { m_moveable = value; }
+        bool Moveable() const { return m_moveable; }
 
         void SetManager(DesktopAdapter* value);
         DesktopAdapter* GetManager() const;
@@ -82,6 +85,9 @@ namespace Gui
         void Update(float dt);
         bool IsFocused() const;
         bool IsMouseOver() const;
+
+        void SetAnimation(WidgetAnimation* animation);
+        WidgetAnimation* GetAnimation() const;
 
     protected:
 
@@ -112,8 +118,9 @@ namespace Gui
         bool m_fixed = false;
         Widget* m_parent = nullptr;
         bool m_need_repaint = true;
-        bool m_focused;
-        bool m_mouse_over;
+        bool m_focused = false;
+        bool m_mouse_over = false;
+        bool m_moveable = false;
         std::vector<Widget*> m_children;        
     };
 }
