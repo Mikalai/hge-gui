@@ -97,13 +97,18 @@ namespace Gui
         DrawQuad(x, y, 1, 1);
     }
 
-    void HgeRender::DrawText(float x, float y, const std::string& s)
+    void HgeRender::DrawLine(float x1, float y1, float x2, float y2)
+    {
+        m_hge->Gfx_RenderLine(x1, y1, x2, y2, FloatToDword(cs->r, cs->g, cs->b, cs->a));
+    }
+
+    void HgeRender::DrawTextLine(float x, float y, const std::string& s)
     {
         if (m_font)
         {
             m_font->SetColor(FloatToDword(cs->r, cs->g, cs->b, cs->a));
             m_font->SetScale(0.8);
-            m_font->Render(x, y, HGETEXT_LEFT, s.c_str());
+            m_font->Render(x, y, HGETEXT_LEFT, s.c_str());            
         }
     }
 
@@ -122,5 +127,20 @@ namespace Gui
         if (m_font)
             delete m_font;
         m_font = new hgeFont(name.c_str());
+    }
+
+    float HgeRender::GetCharacterWidth(char value)
+    {
+        if (!m_font)
+            return 0;
+        char chr[] = {value, 0};
+        return m_font->GetStringWidth(chr);
+    }
+
+    float HgeRender::GetCharacterHeight(char)
+    {
+        if (!m_font)
+            return 0;
+        return m_font->GetHeight() * m_font->GetScale();
     }
 }

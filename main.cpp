@@ -102,7 +102,7 @@ bool RenderFunc()
 
     // Render quads here. This time just
     // one of them will serve our needs.
-    hge->Gfx_RenderQuad(&quad);
+ //   hge->Gfx_RenderQuad(&quad);
 
     // End rendering and update the screen
     hge->Gfx_EndScene();
@@ -129,9 +129,15 @@ void CreateWidget()
 
 
     {
+        Gui::VerticalLayout* layout = new  Gui::VerticalLayout();
         Gui::Widget* w = new Gui::Widget(100, 100, 200, 200);
         Gui::Button* w2 = new Gui::Button(10, 10, 180, 20, "Button", w);
+        Gui::Button* w4 = new Gui::Button(10, 10, 180, 20, "Button2", w);
         Gui::TextLine* w3 = new Gui::TextLine(10, 40, 180, 20, "Text", w);
+        layout->AddWidget(w2);
+        layout->AddWidget(w4);
+        layout->AddWidget(w3);
+        w->SetLayout(layout);
         w2->SigToggle.Connect(new CreateWidgetAction(CreateWidget));
         g_manager->Add(w);
     }
@@ -140,6 +146,8 @@ void CreateWidget()
 void InitGui()
 {
     g_manager = new Gui::Manager(hge);
+    Gui::ScrollBar* w = new Gui::ScrollBar(400, 100, 10, 250, nullptr);
+    g_manager->Add(w);
     CreateWidget();
 }
 

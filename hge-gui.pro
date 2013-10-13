@@ -10,9 +10,9 @@ unix:LIBS += -L"/home/mikalaj/develop/hge-unix/build/src/core" -lhge
 unix:LIBS += -L"/home/mikalaj/develop/hge-unix/build/src/core" -lhge_helpers
 unix:INCLUDEPATH += /home/mikalaj/develop/hge-unix/include
 
-win32:LIBS += d:/the_test/hge181/lib/gcc/libhge.a
-win32:LIBS += d:/the_test/hge181/lib/gcc/libhgehelp.a
-win32:INCLUDEPATH += d:/the_test/hge181/include
+win32:LIBS += d:/sdk/hge181/lib/gcc/libhge.a
+win32:LIBS += d:/sdk/hge181/lib/gcc/libhgehelp.a
+win32:INCLUDEPATH += d:/sdk/hge181/include
 
 
 
@@ -26,7 +26,10 @@ SOURCES += main.cpp \
     src/style.cpp \
     src/widget_animation.cpp \
     src/button.cpp \
-    src/text_line.cpp
+    src/text_line.cpp \
+    src/layout.cpp \
+    src/verticallayout.cpp \
+    src/scrollbar.cpp
 
 HEADERS += \
     src/action.h \
@@ -40,5 +43,8 @@ HEADERS += \
     src/style.h \
     src/widget_animation.h \
     src/button.h \
-    src/text_line.h
+    src/text_line.h \
+    src/layout.h \
+    src/verticallayout.h \
+    src/scrollbar.h
 

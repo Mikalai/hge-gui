@@ -25,18 +25,21 @@ namespace Gui
     public:
         HgeRender(HGE* hge);
         virtual ~HgeRender();
-        virtual void Translate(float dx, float dy);
-        virtual void SetPosition(float x, float y);
-        virtual void Rotate(float da);
-        virtual void SetRotation(float a);
-        virtual void DrawPoint(float x, float y);
-        virtual void DrawQuad(float x, float y, float width, float height);
-        virtual void DrawText(float x, float y, const std::string& s);
-        virtual void SetColor(float r, float g, float b);
-        virtual void SetAlpha(float a);
-        virtual void PushSate();
-        virtual void PopState();
-        virtual void SetFont(const std::string& name);
+        void Translate(float dx, float dy) override;
+        void SetPosition(float x, float y) override;
+        void Rotate(float da) override;
+        void SetRotation(float a) override;
+        void DrawPoint(float x, float y) override;
+        void DrawLine(float x1, float y1, float x2, float y2) override;
+        void DrawQuad(float x, float y, float width, float height) override;
+        void DrawTextLine(float x, float y, const std::string& s) override;
+        void SetColor(float r, float g, float b) override;
+        void SetAlpha(float a) override;
+        void PushSate() override;
+        void PopState() override;
+        void SetFont(const std::string& name) override;
+        float GetCharacterWidth(char value) override;
+        float GetCharacterHeight(char value) override;
 
 
     private:

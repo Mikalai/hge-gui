@@ -14,6 +14,21 @@ namespace Gui
         hgeInputEvent e;
     };
 
+    struct ResizeEvent : public ActionParameter
+    {
+        ResizeEvent(float x, float y, float width, float height)
+            : m_x(x)
+            , m_y(y)
+            , m_width(width)
+            , m_height(height)
+        {}
+
+        float m_x;
+        float m_y;
+        float m_width;
+        float m_height;
+    };
+
     class Animation;
 
     class DesktopAdapter

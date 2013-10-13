@@ -11,6 +11,7 @@ namespace Gui
     class WidgetAnimation;
     class RenderAdapter;
     class DesktopAdapter;
+    class Layout;
 
     class Widget
     {
@@ -69,6 +70,9 @@ namespace Gui
 
         Widget* Parent() const { return m_parent; }
 
+        void SetLayout(Layout* value);
+        Layout* GetLayout() const;
+
         void MouseMove(const Event& e);
         void MousePress(const Event& e);
         void MouseRelease(const Event& e);
@@ -83,6 +87,7 @@ namespace Gui
         void Unfocused(const Event& e);
         void Repaint(RenderAdapter* r);
         void Update(float dt);
+        void Resize(float x, float y, float width, float height);
         bool IsFocused() const;
         bool IsMouseOver() const;
 
@@ -99,17 +104,18 @@ namespace Gui
         virtual void OnKeyUp(const Event& e);
         virtual void OnMouseWheel(const Event& e);
         virtual void OnMouseHoover(const Event& e);
-        virtual void OnResize(const Event& e);
         virtual void OnMouseEnter(const Event& e);
         virtual void OnMouseLeave(const Event& e);
         virtual void OnFocused(const Event& e);
         virtual void OnUnfocused(const Event& e);
         virtual void OnRepaint(RenderAdapter* r);
         virtual void OnUpdate(float dt);
+        virtual void OnResize(float x, float y, float width, float height);
 
     private:
         DesktopAdapter* m_manager = nullptr;
         WidgetAnimation* m_animation = nullptr;
+        Layout* m_layout = nullptr;
         Style m_style;
         float m_x = 0;
         float m_y = 0;
@@ -120,7 +126,7 @@ namespace Gui
         bool m_need_repaint = true;
         bool m_focused = false;
         bool m_mouse_over = false;
-        bool m_moveable = false;
+        bool m_moveable = true;
         std::vector<Widget*> m_children;        
     };
 }

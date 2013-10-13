@@ -1,4 +1,5 @@
 #include <algorithm>
+#include "layout.h"
 #include "render_adapter.h"
 #include "action.h"
 #include "widget.h"
@@ -23,6 +24,9 @@ namespace Gui
     {
         delete m_animation;
         m_animation = nullptr;
+
+        if (m_layout)
+            delete m_layout;
 
         if (m_parent)
             m_parent->RemoveWidget(this);
@@ -52,12 +56,12 @@ namespace Gui
 
     void Widget::Width(int value)
     {
-        m_width = value;
+        Resize(m_x, m_y, value, m_height);
     }
 
     void Widget::Height(int value)
-    {
-        m_height = value;
+    {        
+        Resize(m_x, m_y, m_width, value);
     }
 
     int Widget::LocalX() const
@@ -190,8 +194,17 @@ namespace Gui
     {
     }
 
-    void Widget::OnResize(const Event &e)
+    void Widget::OnResize(float xx, float yy, float width, float height)
     {
+        m_width = width;
+        m_height = height;
+        m_x = xx;
+        m_y = yy;
+
+        if (m_layout)
+        {
+            m_layout->Update(m_x, m_y, width, height);
+        }
     }
 
     void Widget::OnMouseEnter(const Event &e)
@@ -226,6 +239,14 @@ namespace Gui
         for (auto child : m_children)
         {
             child->Repaint(r);
+        }
+
+        if (m_layout)
+        {
+            for (auto child : m_layout->Children())
+            {
+                child->Repaint(r);
+            }
         }
         r->PopState();
     }
@@ -338,6 +359,15 @@ namespace Gui
         OnUnfocused(e);
     }
 
+    void Widget::Resize(float x, float y, float width, float height)
+    {
+        if (x == m_x && y == m_y && m_width == width && m_height == height)
+            return;
+
+        SigResize(ResizeEvent(x, y, width, height));
+        OnResize(x, y, width, height);
+    }
+
     bool Widget::IsFocused() const
     {        
         return m_focused;
@@ -370,5 +400,19 @@ namespace Gui
     WidgetAnimation* Widget::GetAnimation() const
     {
         return m_animation;
+    }
+
+    void Widget::SetLayout(Layout* value)
+    {
+        if (m_layout)
+            delete m_layout;
+        m_layout = value;
+        if (m_layout)
+            m_layout->Update(m_x, m_y, m_width, m_height);
+    }
+
+    Layout* Widget::GetLayout() const
+    {
+        return m_layout;
     }
 }

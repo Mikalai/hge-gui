@@ -6,6 +6,7 @@
 
 namespace Gui
 {
+    class RenderAdapter;
     class TextLine : public Widget
     {
     public:
@@ -19,10 +20,13 @@ namespace Gui
 
         void OnRepaint(RenderAdapter *r) override;
         void OnKeyDown(const Event &e) override;
+        void OnMousePress(const Event &e) override;
 
     private:
         int m_cursor_position = -1;
+        int m_visible_offset = 0;
         std::string m_text;
+        RenderAdapter* m_r = nullptr;
     };
 }
 

@@ -50,7 +50,7 @@ namespace Gui
         Widget::OnRepaint(r);
         r->SetColor(GetStyle().font_color[0], GetStyle().font_color[1], GetStyle().font_color[2]);
         r->SetAlpha(GetStyle().font_color[3]);
-        r->DrawText(GlobalX(), GlobalY(), m_text);
+        r->DrawTextLine(GlobalX(), GlobalY(), m_text);
     }
 
     void Button::OnKeyDown(const Event &e)

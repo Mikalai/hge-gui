@@ -8,5 +8,7 @@
 #include "gui_manager.h"
 #include "button.h"
 #include "text_line.h"
+#include "verticallayout.h"
+#include "scrollbar.h"
 
 #endif // MODULE_H
