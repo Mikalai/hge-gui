@@ -59,6 +59,9 @@ namespace Gui
         void Moveable(bool value) { m_moveable = value; }
         bool Moveable() const { return m_moveable; }
 
+        void Visible(bool value) { m_visible = value; }
+        bool Visible() const { return m_visible; }
+
         void SetManager(DesktopAdapter* value);
         DesktopAdapter* GetManager() const;
 
@@ -127,6 +130,7 @@ namespace Gui
         bool m_focused = false;
         bool m_mouse_over = false;
         bool m_moveable = true;
+        bool m_visible = true;
         std::vector<Widget*> m_children;        
     };
 }

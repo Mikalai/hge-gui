@@ -2,6 +2,7 @@
 #define TEXT_LINE_H
 
 #include <string>
+#include <vector>
 #include "widget.h"
 
 namespace Gui
@@ -16,17 +17,24 @@ namespace Gui
         void Text(const std::string& value);
         const std::string& Text() const;
 
+        bool Editable() const;
+        void Editable(bool value);
+
     protected:
 
         void OnRepaint(RenderAdapter *r) override;
         void OnKeyDown(const Event &e) override;
         void OnMousePress(const Event &e) override;
 
+        void Update();
     private:
+        bool m_editable = false;
+        bool m_need_update = true;
+        std::vector<float> m_width_cache;
         int m_cursor_position = -1;
         int m_visible_offset = 0;
+        int m_visible_count = 0;
         std::string m_text;
-        RenderAdapter* m_r = nullptr;
     };
 }
 

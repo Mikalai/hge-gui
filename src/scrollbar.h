@@ -6,10 +6,21 @@
 namespace Gui
 {
     class Button;
+
+    ///  Parameter is used when scroll bar value changed signal arrives
+    struct ScrollBarValueChanged : public ActionParameter
+    {
+        ScrollBarValueChanged(int v)
+            : value(v) {}
+
+        int value;
+    };
+
     class ScrollBar : public Widget
     {
     public:
         ScrollBar(float x, float y, float width, float height, Widget* parent);
+        virtual ~ScrollBar();
 
         void Position(int value);
         int Position() const;
@@ -20,6 +31,11 @@ namespace Gui
         Button* UpButton() const;
         Button* DownButton() const;
         Button* ScrollButton() const;
+
+        Signal SigValueChanged;
+
+    public:
+        void OnMouseWheel(const Event &e) override;
 
     private:
         int m_min = 0;

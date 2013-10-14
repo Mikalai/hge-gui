@@ -42,6 +42,8 @@ namespace Gui
         : Widget(x, y, width, height, parent)
         , m_text(text)
     {
+        Moveable(false);
+        Fixed(true);
         SetAnimation(new ButtonAnimation(this));
     }
 

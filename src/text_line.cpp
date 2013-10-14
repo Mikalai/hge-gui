@@ -8,7 +8,9 @@ namespace Gui
         : Widget(x, y, width, height, parent)
         , m_text(text)
     {
-        m_cursor_position = m_text.empty() ? -1 : 0;
+        m_cursor_position = m_text.empty() ? -1 : 0;        
+        Moveable(false);
+        Fixed(true);
     }
 
     TextLine::~TextLine()
@@ -19,6 +21,7 @@ namespace Gui
     {
         m_text = value;
         m_cursor_position = m_text.empty() ? -1 : 0;
+        Update();
     }
 
     const std::string& TextLine::Text() const
@@ -27,30 +30,26 @@ namespace Gui
     }
 
 
-    void TextLine::OnRepaint(RenderAdapter *r)
-    {        
-        Widget::OnRepaint(r);
-        m_r = r;
-        r->SetColor(GetStyle().font_color[0], GetStyle().font_color[1], GetStyle().font_color[2]);
-        r->SetAlpha(GetStyle().font_color[3]);
+    void TextLine::Update()
+    {
         //  determine neccessary width
-        std::vector<float> chr_width(m_text.size());
+        m_width_cache.resize(m_text.size());
         //  fill width array
         for (int index = 0, max_i = m_text.size(); index != max_i; ++index)
         {
-            chr_width[index] = r->GetCharacterWidth(m_text[index]);
+            m_width_cache[index] = GetManager()->GetFont()->GetCharacterWidth(m_text[index]);
         }
 
         //  find visible characters count
         float width = 0;
-        int count = 0;  // visible count
+        m_visible_count = 0;  // visible count
         int max_i = m_text.size();
         for (int index = m_visible_offset; index != max_i; ++index)
         {
-            if (width + chr_width[index] > Width())
+            if (width + m_width_cache[index] > Width())
                 break;
-            width += chr_width[index];
-            count++;
+            width += m_width_cache[index];
+            m_visible_count++;
         }
 
         //  setup visible offset to make cursor always visible
@@ -59,27 +58,45 @@ namespace Gui
             m_visible_offset = m_cursor_position;
         }
 
-        if (m_visible_offset + count < m_cursor_position)
+        if (m_visible_offset + m_visible_count < m_cursor_position)
         {
-            m_visible_offset = m_cursor_position - count;
+            m_visible_offset = m_cursor_position - m_visible_count;
         }
 
         //  clip offset
-        m_visible_offset = std::max(std::min(m_visible_offset, (int)m_text.size()-count), 0);
+        m_visible_offset = std::max(std::min(m_visible_offset, (int)m_text.size()-m_visible_count), 0);
 
-        r->DrawTextLine(GlobalX(), GlobalY(), m_text.substr(m_visible_offset, count));
+        m_need_update = false;
+    }
+
+    void TextLine::OnRepaint(RenderAdapter *r)
+    {        
+        Widget::OnRepaint(r);
+        r->SetColor(GetStyle().font_color[0], GetStyle().font_color[1], GetStyle().font_color[2]);
+        r->SetAlpha(GetStyle().font_color[3]);
+
+        if (m_need_update)
+            Update();
+
+        r->DrawTextLine(GlobalX(), GlobalY(), m_text.substr(m_visible_offset, m_visible_count));
 
         //  find cursor geometry
-        float x = 0;
-        for (int index = m_visible_offset; index < m_cursor_position; ++index)
+        if (m_editable && IsFocused())
         {
-            x += chr_width[index];
+            float x = 0;
+            for (int index = m_visible_offset; index < m_cursor_position; ++index)
+            {
+                x += m_width_cache[index];
+            }
+            r->DrawLine(GlobalX() + x, GlobalY() + 1, GlobalX() + x, GlobalY() + GetManager()->GetFont()->GetCharacterHeight('I') - 1);
         }
-        r->DrawLine(GlobalX() + x, GlobalY() + 1, GlobalX() + x, GlobalY() + r->GetCharacterHeight('I') - 1);
     }
 
     void TextLine::OnKeyDown(const Event &e)
     {
+        if (!m_editable)
+            return;
+
         if (e.e.key == HGEK_BACKSPACE)
         {
             if (m_cursor_position != 0)
@@ -113,17 +130,15 @@ namespace Gui
                 m_cursor_position++;
             }
         }
+        Update();
     }
 
     void TextLine::OnMousePress(const Event &e)
     {
-        if (!m_r)
-            return;
-
         int x = e.e.x - GlobalX();
         for (int i = m_visible_offset, max_i = m_text.size(); i < max_i; ++i)
         {
-            x -= m_r->GetCharacterWidth(m_text[i]);
+            x -= GetManager()->GetFont()->GetCharacterWidth(m_text[i]);
             if (x < 0)
             {
                 m_cursor_position = i;
@@ -132,5 +147,17 @@ namespace Gui
         }
         if (x > 0)
             m_cursor_position = m_text.size();
+
+        Update();
+    }
+
+    bool TextLine::Editable() const
+    {
+        return m_editable;
+    }
+
+    void TextLine::Editable(bool value)
+    {
+        m_editable = value;
     }
 }

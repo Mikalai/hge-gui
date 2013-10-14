@@ -75,13 +75,13 @@ namespace Gui
     }
 
     void Widget::LocalX(int value)
-    {
-        m_x = value;
+    {        
+        Resize(value, m_y, m_width, m_height);
     }
 
     void Widget::LocalY(int value)
-    {
-        m_y = value;
+    {        
+        Resize(m_x, value, m_width, m_height);
     }
 
     int Widget::GlobalX() const
@@ -103,8 +103,9 @@ namespace Gui
     {
         float w = (m_parent ? m_parent->Width() : m_manager->GetWindowWidth()) - m_width;
         float h = (m_parent ? m_parent->Height() : m_manager->GetWindowHeight()) - m_height;
-        m_x = std::min(std::max((float)x, 0.0f), w);
-        m_y = std::min(std::max((float)y, 0.0f), h);
+        x = std::min(std::max((float)x, 0.0f), w);
+        y = std::min(std::max((float)y, 0.0f), h);
+        Resize(x, y, m_width, m_height);
     }
 
     Widget* Widget::GetWidget(int x, int y)
@@ -229,12 +230,16 @@ namespace Gui
 
     void Widget::OnRepaint(RenderAdapter *r)
     {
-        if (!m_need_repaint)
+        if (!m_need_repaint || !Visible())
             return;
+
         r->PushSate();
-        r->SetColor(m_style.back_color[0], m_style.back_color[1], m_style.back_color[2]);
-        r->SetAlpha(m_style.back_color[3]);
-        r->DrawQuad(m_x, m_y, m_width, m_height);
+        if (m_style.back_color[3] > 0.0f)
+        {
+            r->SetColor(m_style.back_color[0], m_style.back_color[1], m_style.back_color[2]);
+            r->SetAlpha(m_style.back_color[3]);
+            r->DrawQuad(m_x, m_y, m_width, m_height);
+        }
         r->Translate(m_x, m_y);
         for (auto child : m_children)
         {

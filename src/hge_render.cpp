@@ -1,10 +1,10 @@
 #include <hge.h>
 #include <hgefont.h>
 #include "hge_render.h"
+#include "gui_manager.h"
 
 namespace Gui
-{
-
+{    
     DWORD FloatToDword(float r, float g, float b, float a)
     {
         DWORD rr = (DWORD)(r * 255.0f);
@@ -15,20 +15,15 @@ namespace Gui
         return c;
     }
 
-    HgeRender::HgeRender(HGE *hge)
-        : m_hge(hge)
+    HgeRender::HgeRender(Manager *value)
+        : m_manager(value)
     {
-        cs = new RenderState;
-        m_font = new hgeFont("../data/font1.fnt");
+        cs = new RenderState;        
     }
 
     HgeRender::~HgeRender()
     {
-        if (m_font)
-        {
-            delete m_font;
-            m_font = nullptr;
-        }
+
     }
 
     void HgeRender::DrawQuad(float x, float y, float width, float height)
@@ -51,7 +46,7 @@ namespace Gui
 
         quad.tex = 0;
         quad.blend = BLEND_DEFAULT;
-        m_hge->Gfx_RenderQuad(&quad);
+        m_manager->GetHge()->Gfx_RenderQuad(&quad);
     }
 
     void HgeRender::PushSate()
@@ -99,16 +94,16 @@ namespace Gui
 
     void HgeRender::DrawLine(float x1, float y1, float x2, float y2)
     {
-        m_hge->Gfx_RenderLine(x1, y1, x2, y2, FloatToDword(cs->r, cs->g, cs->b, cs->a));
+        m_manager->GetHge()->Gfx_RenderLine(x1, y1, x2, y2, FloatToDword(cs->r, cs->g, cs->b, cs->a));
     }
 
     void HgeRender::DrawTextLine(float x, float y, const std::string& s)
     {
-        if (m_font)
+        if (m_manager->GetHgeFont())
         {
-            m_font->SetColor(FloatToDword(cs->r, cs->g, cs->b, cs->a));
-            m_font->SetScale(0.8);
-            m_font->Render(x, y, HGETEXT_LEFT, s.c_str());            
+            m_manager->GetHgeFont()->SetColor(FloatToDword(cs->r, cs->g, cs->b, cs->a));
+            m_manager->GetHgeFont()->SetScale(0.8);
+            m_manager->GetHgeFont()->Render(x, y, HGETEXT_LEFT, s.c_str());
         }
     }
 
@@ -120,27 +115,5 @@ namespace Gui
     void HgeRender::SetAlpha(float a)
     {
         cs->a = a;
-    }
-
-    void HgeRender::SetFont(const std::string &name)
-    {
-        if (m_font)
-            delete m_font;
-        m_font = new hgeFont(name.c_str());
-    }
-
-    float HgeRender::GetCharacterWidth(char value)
-    {
-        if (!m_font)
-            return 0;
-        char chr[] = {value, 0};
-        return m_font->GetStringWidth(chr);
-    }
-
-    float HgeRender::GetCharacterHeight(char)
-    {
-        if (!m_font)
-            return 0;
-        return m_font->GetHeight() * m_font->GetScale();
-    }
+    }        
 }

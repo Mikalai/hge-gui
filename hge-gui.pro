@@ -29,7 +29,8 @@ SOURCES += main.cpp \
     src/text_line.cpp \
     src/layout.cpp \
     src/verticallayout.cpp \
-    src/scrollbar.cpp
+    src/scrollbar.cpp \
+    src/list_box.cpp
 
 HEADERS += \
     src/action.h \
@@ -46,5 +47,7 @@ HEADERS += \
     src/text_line.h \
     src/layout.h \
     src/verticallayout.h \
-    src/scrollbar.h
+    src/scrollbar.h \
+    src/list_box.h \
+    src/font_adapter.h
 

@@ -39,6 +39,22 @@ namespace Gui
         ScrollBar* m_scroll;
     };
 
+    //  used to scroll when mouse is at scroller
+    struct ScrollBarWheelAction : public Action
+    {
+        ScrollBarWheelAction(ScrollBar* scroll)
+            : m_scroll(scroll)
+        {}
+
+        void operator ()(const ActionParameter& p)
+        {
+            const Event& e = dynamic_cast<const Event&>(p);
+            m_scroll->Position(m_scroll->Position() - e.e.wheel);
+        }
+
+        ScrollBar* m_scroll;
+    };
+
     ScrollBar::ScrollBar(float x, float y, float width, float height, Widget *parent)
         : Widget(x, y, width, height, parent)
         , m_position(0)
@@ -50,11 +66,16 @@ namespace Gui
         m_down_button->Fixed(true);
         m_down_button->Moveable(false);
         m_scroll = new Button(0, 10, width, 10, "", this);
+        m_scroll->GetStyle().back_color_unfocused = {{0.1f, 0.1f, 0.1f, 1.0f}};
 
         m_up_button->SigToggle.Connect(new ScrollAction(this, -1));
         m_down_button->SigToggle.Connect(new ScrollAction(this, 1));
-        m_scroll->SigMouseMove.Connect(new ScrollUpdateAction(this));
+        m_scroll->SigResize.Connect(new ScrollUpdateAction(this));
+        m_scroll->SigMouseWheel.Connect(new ScrollBarWheelAction(this));
     }
+
+    ScrollBar::~ScrollBar()
+    {}
 
     void ScrollBar::SetMinMax(int min, int max)
     {
@@ -68,6 +89,7 @@ namespace Gui
         if (new_pos == m_position)
             return;
         m_position = new_pos;
+        SigValueChanged(ScrollBarValueChanged(m_position));
 
         float off = m_up_button->Height();
         float h = Height() - 2*off;
@@ -93,5 +115,10 @@ namespace Gui
     Button* ScrollBar::ScrollButton() const
     {
         return m_scroll;
+    }
+
+    void ScrollBar::OnMouseWheel(const Event &e)
+    {
+        Position(Position() - e.e.wheel);
     }
 }

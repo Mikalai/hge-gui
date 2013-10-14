@@ -5,12 +5,25 @@
 #include "desktop_adapter.h"
 
 class HGE;
+class hgeFont;
 
 namespace Gui
 {
     class Animation;
     class Widget;
-    class HgeRender;
+    class HgeRender;    
+
+    class HgeFont : public FontAdapter
+    {
+    public:
+        HgeFont();
+        virtual ~HgeFont();
+        void SetFont(const std::string& name) override;
+        float GetCharacterWidth(char value) override;
+        float GetCharacterHeight(char value) override;
+
+        hgeFont* m_font = nullptr;
+    };
 
     class Manager : public DesktopAdapter
     {
@@ -38,6 +51,10 @@ namespace Gui
         void Repaint();
         void Update(float dt);
 
+        FontAdapter* GetFont() override;
+        hgeFont* GetHgeFont();
+        HGE* GetHge() { return m_hge; }
+
     private:
         Widget* GetWidget(int x, int y);
         void MoveToFront(Widget* widget);
@@ -51,6 +68,7 @@ namespace Gui
         bool m_right_down = false;
         bool m_middle_down = false;
         HGE* m_hge = nullptr;
+        HgeFont* m_font = nullptr;
         HgeRender* m_render = nullptr;
         Widget* m_focus = nullptr;
         /// Widget on wich mouse cursor is currently located

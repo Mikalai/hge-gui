@@ -147,7 +147,14 @@ void InitGui()
 {
     g_manager = new Gui::Manager(hge);
     Gui::ScrollBar* w = new Gui::ScrollBar(400, 100, 10, 250, nullptr);
+    Gui::ListBox* l = new Gui::ListBox(450, 100, 200, 400, nullptr);
     g_manager->Add(w);
+    std::vector<std::string> names {"Gun&Roses", "Onix", "WuTang Clan", "Zeman", "2H Company", "Nirvana",
+                                    "Pixies", "REM", "Lordz of Brooklyn", "Jay-Z", "Lil John", "Black Sabbath",
+                                    "Motorhead HAHAHAHAHAHA", "Metallica", "Rammstein", "NRM", "Iron Maden", "Judas Priests",
+                                    "Bob Marley", "Run D.M.C"};
+    l->AddItems(names);
+    g_manager->Add(l);
     CreateWidget();
 }
 

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <hge.h>
+#include <hgefont.h>
 #include "hge_render.h"
 #include "gui_manager.h"
 #include "widget.h"
@@ -9,14 +10,53 @@
 
 namespace Gui
 {
+    HgeFont::HgeFont()
+    {
+        m_font = new hgeFont("../data/font1.fnt");
+    }
+
+    HgeFont::~HgeFont()
+    {
+        delete m_font;
+        m_font = nullptr;
+    }
+
+    void HgeFont::SetFont(const std::string &name)
+    {
+        if (m_font)
+            delete m_font;
+        m_font = new hgeFont(name.c_str());
+    }
+
+    float HgeFont::GetCharacterWidth(char value)
+    {
+        if (!m_font)
+            return 0;
+        char chr[] = {value, 0};
+        return m_font->GetStringWidth(chr);
+    }
+
+    float HgeFont::GetCharacterHeight(char)
+    {
+        if (!m_font)
+            return 0;
+        return m_font->GetHeight() * m_font->GetScale();
+    }
+
     Manager::Manager(HGE *hge)
         : m_hge(hge)
-        , m_render(new HgeRender(hge))
+        , m_render(new HgeRender(this))
     {
     }
 
     Manager::~Manager()
     {
+        if (m_font)
+        {
+            delete m_font;
+            m_font = nullptr;
+        }
+
         while (!m_children.empty())
         {
             delete m_children.back();
@@ -119,17 +159,23 @@ namespace Gui
 
     void Manager::OnKeyDown(const Event &e)
     {
-        if (m_focus)
+        if (m_focus && m_focus->Visible())
         {            
             m_focus->KeyDown(e);
         }
+        else
+            m_focus = nullptr;
     }
 
     void Manager::OnKeyUp(const Event &e)
     {
-        if (m_focus)
+        if (m_focus && m_focus->Visible())
         {            
             m_focus->KeyUp(e);
+        }
+        else
+        {
+            m_focus = nullptr;
         }
     }
 
@@ -164,9 +210,12 @@ namespace Gui
     {
         for (Widget* w : m_children)
         {
-            Widget* res = w->GetWidget(x - w->LocalX(), y - w->LocalY());
-            if (res)
-                return res;
+            if (w->Visible())
+            {
+                Widget* res = w->GetWidget(x - w->LocalX(), y - w->LocalY());
+                if (res)
+                    return res;
+            }
         }
         return nullptr;
     }
@@ -188,8 +237,12 @@ namespace Gui
         for (auto  it = m_children.rbegin(); it != m_children.rend(); ++it)
         {
             Widget* w = *it;
-            w->Repaint(m_render);
+            if (w->Visible())
+            {
+                w->Repaint(m_render);
+            }
         }
+        m_render->SetColor(1, 1, 1);
         m_render->DrawQuad(m_x, m_y, 5, 5);
     }
 
@@ -236,5 +289,21 @@ namespace Gui
             if (animation->Active())
                 animation->Update(dt);
         }
+    }
+
+    FontAdapter* Manager::GetFont()
+    {
+        if (m_font)
+            return m_font;
+        m_font = new HgeFont;
+        return m_font;
+    }
+
+    hgeFont* Manager::GetHgeFont()
+    {
+        if (m_font)
+            return m_font->m_font;
+        m_font = new HgeFont;
+        return m_font->m_font;
     }
 }

@@ -10,5 +10,6 @@
 #include "text_line.h"
 #include "verticallayout.h"
 #include "scrollbar.h"
+#include "list_box.h"
 
 #endif // MODULE_H

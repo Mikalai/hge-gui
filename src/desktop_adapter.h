@@ -3,6 +3,8 @@
 
 #include <hge.h>
 #include "action.h"
+#include "font_adapter.h"
+
 namespace Gui
 {
     struct Event : public ActionParameter
@@ -48,6 +50,7 @@ namespace Gui
         virtual int GetWindowHeight() = 0;
         virtual void AddAnimation(Animation* value) = 0;
         virtual void RemoveAnimation(Animation* value) = 0;
+        virtual FontAdapter* GetFont() = 0;
     };
 }
 

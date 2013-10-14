@@ -20,10 +20,12 @@ namespace Gui
         float angle = 0;
     };
 
+    class Manager;
+
     class HgeRender : public RenderAdapter
     {
     public:
-        HgeRender(HGE* hge);
+        HgeRender(Manager* hge);
         virtual ~HgeRender();
         void Translate(float dx, float dy) override;
         void SetPosition(float x, float y) override;
@@ -36,15 +38,10 @@ namespace Gui
         void SetColor(float r, float g, float b) override;
         void SetAlpha(float a) override;
         void PushSate() override;
-        void PopState() override;
-        void SetFont(const std::string& name) override;
-        float GetCharacterWidth(char value) override;
-        float GetCharacterHeight(char value) override;
-
+        void PopState() override;        
 
     private:
-        HGE* m_hge = nullptr;
-        hgeFont* m_font = nullptr;
+        Manager* m_manager;
         float m_x = 0;
         float m_y = 0;
         std::stack<RenderState*> m_state;
