@@ -7,14 +7,6 @@ namespace Gui
 {
     class Button;
 
-    ///  Parameter is used when scroll bar value changed signal arrives
-    struct ScrollBarValueChanged : public ActionParameter
-    {
-        ScrollBarValueChanged(int v)
-            : value(v) {}
-
-        int value;
-    };
 
     class ScrollBar : public Widget
     {

@@ -67,6 +67,7 @@ namespace Gui
         m_down_button->Moveable(false);
         m_scroll = new Button(0, 10, width, 10, "", this);
         m_scroll->GetStyle().back_color_unfocused = {{0.1f, 0.1f, 0.1f, 1.0f}};
+        m_scroll->Moveable(true);
 
         m_up_button->SigToggle.Connect(new ScrollAction(this, -1));
         m_down_button->SigToggle.Connect(new ScrollAction(this, 1));
@@ -89,7 +90,7 @@ namespace Gui
         if (new_pos == m_position)
             return;
         m_position = new_pos;
-        SigValueChanged(ScrollBarValueChanged(m_position));
+        SigValueChanged(SimpleType<int>(m_position));
 
         float off = m_up_button->Height();
         float h = Height() - 2*off;

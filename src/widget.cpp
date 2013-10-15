@@ -250,7 +250,8 @@ namespace Gui
         {
             for (auto child : m_layout->Children())
             {
-                child->Repaint(r);
+                if (child->Visible())
+                    child->Repaint(r);
             }
         }
         r->PopState();

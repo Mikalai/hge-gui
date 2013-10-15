@@ -29,6 +29,8 @@ void boom() {
     hge->Effect_PlayEx(snd,100,pan,pitch);
 }
 
+Dialog* d;
+
 bool FrameFunc()
 {
     hgeInputEvent event;
@@ -130,7 +132,7 @@ void CreateWidget()
 
     {
         Gui::VerticalLayout* layout = new  Gui::VerticalLayout();
-        Gui::Widget* w = new Gui::Widget(100, 100, 200, 200);
+        Gui::Widget* w = new Gui::Widget(100, 300, 200, 200);
         Gui::Button* w2 = new Gui::Button(10, 10, 180, 20, "Button", w);
         Gui::Button* w4 = new Gui::Button(10, 10, 180, 20, "Button2", w);
         Gui::TextLine* w3 = new Gui::TextLine(10, 40, 180, 20, "Text", w);
@@ -146,20 +148,24 @@ void CreateWidget()
 void InitGui()
 {
     g_manager = new Gui::Manager(hge);
-    Gui::ScrollBar* w = new Gui::ScrollBar(400, 100, 10, 250, nullptr);
+    Gui::ScrollBar* w = new Gui::ScrollBar(400, 300, 10, 250, nullptr);
     Gui::ListBox* l = new Gui::ListBox(450, 100, 200, 400, nullptr);
     g_manager->Add(w);
     std::vector<std::string> names {"Gun&Roses", "Onix", "WuTang Clan", "Zeman", "2H Company", "Nirvana",
                                     "Pixies", "REM", "Lordz of Brooklyn", "Jay-Z", "Lil John", "Black Sabbath",
                                     "Motorhead HAHAHAHAHAHA", "Metallica", "Rammstein", "NRM", "Iron Maden", "Judas Priests",
                                     "Bob Marley", "Run D.M.C"};
-    l->AddItems(names);
+    l->AddItems(names);   
     g_manager->Add(l);
+    Gui::ComboBox* b = new Gui::ComboBox(0, 0, 120, 200, nullptr);
+    b->AddItems(names);
+    g_manager->Add(b);
     CreateWidget();
 }
 
 int main(int argc, char *argv[])
 {
+    d = new Dialog;
     // Get HGE interface
     hge = hgeCreate(HGE_VERSION);
 

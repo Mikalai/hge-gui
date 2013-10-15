@@ -11,5 +11,7 @@
 #include "verticallayout.h"
 #include "scrollbar.h"
 #include "list_box.h"
+#include "combo_box.h"
+#include "dialog.h"
 
 #endif // MODULE_H

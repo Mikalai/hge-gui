@@ -8,6 +8,7 @@ DEFINES += PLATFORM_UNIX
 
 unix:LIBS += -L"/home/mikalaj/develop/hge-unix/build/src/core" -lhge
 unix:LIBS += -L"/home/mikalaj/develop/hge-unix/build/src/core" -lhge_helpers
+unix:LIBS += -lexpat
 unix:INCLUDEPATH += /home/mikalaj/develop/hge-unix/include
 
 win32:LIBS += d:/sdk/hge181/lib/gcc/libhge.a
@@ -30,7 +31,9 @@ SOURCES += main.cpp \
     src/layout.cpp \
     src/verticallayout.cpp \
     src/scrollbar.cpp \
-    src/list_box.cpp
+    src/list_box.cpp \
+    src/combo_box.cpp \
+    src/dialog.cpp
 
 HEADERS += \
     src/action.h \
@@ -49,5 +52,7 @@ HEADERS += \
     src/verticallayout.h \
     src/scrollbar.h \
     src/list_box.h \
-    src/font_adapter.h
+    src/font_adapter.h \
+    src/combo_box.h \
+    src/dialog.h
 

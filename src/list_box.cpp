@@ -6,29 +6,14 @@
 
 namespace Gui
 {
-    float delta = 0.0f;
-
-    struct ListItemScroll : public Action
-    {
-        ListItemScroll(ListBox* box)
-            : m_box(box)
-        {}
-
-        void operator () (const ActionParameter& pp)
-        {
-            const ScrollBarValueChanged& p = dynamic_cast<const ScrollBarValueChanged&>(pp);
-            m_box->SetStartItem(p.value);
-        }
-
-        ListBox* m_box;
-    };
+    float delta = 0.0f;    
 
     ListBox::ListBox(float x, float y, float width, float height, Widget *parent)
         : Widget(x, y, width, height, parent)
     {
         m_scroll = new ScrollBar(width - 5, 0, 5, height, this);
         m_scroll->Visible(false);
-        m_scroll->SigValueChanged.Connect(new ListItemScroll(this));
+        m_scroll->SigValueChanged.Connect(new ValueChanged<ListBox, int>(this, &ListBox::SetStartItem));
         m_scroll->Fixed(true);
         m_scroll->Moveable(false);
         m_scroll->GetAnimation()->PlayFocused();
@@ -46,6 +31,9 @@ namespace Gui
     void ListBox::OnRepaint(RenderAdapter *r)
     {
         Widget::OnRepaint(r);
+        if (!Visible())
+            return;
+
         if (m_need_update)
             Update();
 
@@ -91,8 +79,13 @@ namespace Gui
         int item = m_start_item + (e.e.y - GlobalY()) / h;
         if (item == m_current_item)
             return;
+        if (item > m_items.size())
+        {
+            m_current_item = -1;
+            return;
+        }
         m_current_item = item;
-        SigItemSelected(ListItemSelected(m_current_item));
+        SigItemSelected(SimpleType<int>(m_current_item));
         Update();
     }
 
@@ -135,5 +128,19 @@ namespace Gui
         m_start_item = std::max(std::min(m_start_item, count - m_visible_count), 0);
         m_scroll->Position(m_start_item);
         //Update();
+    }
+
+    ListItem* ListBox::CurrentItem()
+    {
+        if (m_current_item != -1)
+            return m_items[m_current_item];
+        return nullptr;
+    }
+
+    const ListItem* ListBox::CurrentItem() const
+    {
+        if (m_current_item != -1)
+            return m_items[m_current_item];
+        return nullptr;
     }
 }

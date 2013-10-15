@@ -124,12 +124,12 @@ namespace Gui
         float m_y = 0;
         float m_width = 128;
         float m_height = 128;
-        bool m_fixed = false;
+        bool m_fixed = true;
         Widget* m_parent = nullptr;
         bool m_need_repaint = true;
         bool m_focused = false;
         bool m_mouse_over = false;
-        bool m_moveable = true;
+        bool m_moveable = false;
         bool m_visible = true;
         std::vector<Widget*> m_children;        
     };

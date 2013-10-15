@@ -60,19 +60,59 @@ namespace Gui
         Widget::OnKeyDown(e);
         if (e.e.key == HGEK_ENTER || e.e.key == HGEK_SPACE)
         {
-            if (GetAnimation())
-                GetAnimation()->PlayMouseLeftDown(e);
+            if (m_checkable)
+            {
+                if (!m_checked)
+                {
+                    if (GetAnimation())
+                        GetAnimation()->PlayMouseLeftDown(e);
+                }
+                else
+                {
+                    if (GetAnimation())
+                        GetAnimation()->PlayMouseLeftUp(e);
+                }
+                m_checked = !m_checked;
+            }
+            else
+            {
+                if (GetAnimation())
+                    GetAnimation()->PlayMouseLeftDown(e);
+            }
         }
     }
 
     void Button::OnKeyUp(const Event &e)
     {
         Widget::OnKeyUp(e);
-        if (e.e.key == HGEK_ENTER || e.e.key == HGEK_SPACE)
+        if (!m_checkable)
         {
-            if (GetAnimation())
-                GetAnimation()->PlayMouseLeftUp(e);
-            SigToggle(e);
+            if (e.e.key == HGEK_ENTER || e.e.key == HGEK_SPACE)
+            {
+                if (GetAnimation())
+                    GetAnimation()->PlayMouseLeftUp(e);
+                SigToggle(SimpleType<void>());
+            }
         }
+    }
+
+    void Button::Checkable(bool value)
+    {
+        m_checkable = value;
+    }
+
+    bool Button::Checkable() const
+    {
+        return m_checkable;
+    }
+
+    void Button::Checked(bool value)
+    {
+        m_checked = value;
+    }
+
+    bool Button::Checked() const
+    {
+        return m_checked;
     }
 }

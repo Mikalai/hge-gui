@@ -18,14 +18,6 @@ namespace Gui
         void* data;
     };
 
-    struct ListItemSelected : public ActionParameter
-    {
-        ListItemSelected(int value)
-            : item(value) {}
-
-        int item = -1;
-    };
-
     class ListBox : public Widget
     {
     public:
@@ -37,6 +29,9 @@ namespace Gui
         void AddItem(const std::string& name, void* data = nullptr);
         void AddItems(const std::vector<std::string>& value);
         void SetStartItem(int index);
+
+        ListItem* CurrentItem();
+        const ListItem* CurrentItem() const;
 
         Signal SigItemSelected;
 
