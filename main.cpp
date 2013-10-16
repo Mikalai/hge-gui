@@ -31,6 +31,8 @@ void boom() {
 
 Dialog* d;
 
+Gui::PopMenu* menu;
+
 bool FrameFunc()
 {
     hgeInputEvent event;
@@ -38,8 +40,8 @@ bool FrameFunc()
     {
         switch(event.type)
         {
-        case INPUT_MOUSEMOVE:
-            g_manager->OnMouseMove(event);
+        case INPUT_MOUSEMOVE:            
+            g_manager->OnMouseMove(event);            
             break;
         case INPUT_MOUSEWHEEL:
             g_manager->OnMouseWheel(event);
@@ -52,6 +54,14 @@ bool FrameFunc()
             break;
         case INPUT_MBUTTONDOWN:
             g_manager->OnMousePress(event);
+            if (event.key == HGEK_RBUTTON)
+            {
+                if (menu)
+                {
+                    menu->Resize(event.x, event.y, 100, 200);
+                    menu->Exec();
+                }
+            }
             break;
         case INPUT_MBUTTONUP:
             g_manager->OnMouseRelease(event);
@@ -155,6 +165,12 @@ void InitGui()
                                     "Pixies", "REM", "Lordz of Brooklyn", "Jay-Z", "Lil John", "Black Sabbath",
                                     "Motorhead HAHAHAHAHAHA", "Metallica", "Rammstein", "NRM", "Iron Maden", "Judas Priests",
                                     "Bob Marley", "Run D.M.C"};
+
+    menu = new Gui::PopMenu(0, 0, 100, 200, nullptr);
+    menu->Visible(true);
+    menu->AddItems(names);
+    g_manager->Add(menu);
+
     l->AddItems(names);   
     g_manager->Add(l);
     Gui::ComboBox* b = new Gui::ComboBox(0, 0, 120, 200, nullptr);

@@ -94,7 +94,7 @@ namespace Gui
 
     void HgeRender::DrawLine(float x1, float y1, float x2, float y2)
     {
-        m_manager->GetHge()->Gfx_RenderLine(x1, y1, x2, y2, FloatToDword(cs->r, cs->g, cs->b, cs->a));
+        m_manager->GetHge()->Gfx_RenderLine(x1 + cs->x, y1 + cs->y, x2 + cs->x, y2 + cs->y, FloatToDword(cs->r, cs->g, cs->b, cs->a));
     }
 
     void HgeRender::DrawTextLine(float x, float y, const std::string& s)
@@ -103,7 +103,7 @@ namespace Gui
         {
             m_manager->GetHgeFont()->SetColor(FloatToDword(cs->r, cs->g, cs->b, cs->a));
             m_manager->GetHgeFont()->SetScale(0.8);
-            m_manager->GetHgeFont()->Render(x, y, HGETEXT_LEFT, s.c_str());
+            m_manager->GetHgeFont()->Render(x+cs->x, y+cs->y, HGETEXT_LEFT, s.c_str());
         }
     }
 

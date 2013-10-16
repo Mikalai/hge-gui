@@ -117,9 +117,12 @@ namespace Gui
         Widget* res = nullptr;
         for (Widget* child : m_children)
         {
-            res = child->GetWidget(x - child->LocalX(), y - child->LocalY());
-            if (res)
-                return res;
+            if (child->Visible())
+            {
+                res = child->GetWidget(x - child->LocalX(), y - child->LocalY());
+                if (res)
+                    return res;
+            }
         }
         return this;
     }

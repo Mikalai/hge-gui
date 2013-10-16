@@ -33,7 +33,8 @@ SOURCES += main.cpp \
     src/scrollbar.cpp \
     src/list_box.cpp \
     src/combo_box.cpp \
-    src/dialog.cpp
+    src/dialog.cpp \
+    src/pop_menu.cpp
 
 HEADERS += \
     src/action.h \
@@ -54,5 +55,7 @@ HEADERS += \
     src/list_box.h \
     src/font_adapter.h \
     src/combo_box.h \
-    src/dialog.h
+    src/dialog.h \
+    src/pop_menu.h \
+    src/item.h
 

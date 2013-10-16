@@ -13,5 +13,6 @@
 #include "list_box.h"
 #include "combo_box.h"
 #include "dialog.h"
+#include "pop_menu.h"
 
 #endif // MODULE_H

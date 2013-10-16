@@ -15,6 +15,7 @@ namespace Gui
         GetStyle().back_color[3] = 0;
         GetStyle().back_color_mouse_down[3] = 0;
         GetStyle().back_color_unfocused[3] = 0;
+        GetStyle().back_color_moused[3] = 0;
 
         m_line_edit = new TextLine(0, 0, width - delta, delta, "", this);
         m_button = new Button(width - delta, 0, delta, delta, "", this);
@@ -49,15 +50,15 @@ namespace Gui
     void ComboBox::ItemSelected(int)
     {
         m_list_box->Visible(false);
-        ListItem* item = m_list_box->CurrentItem();
+        Item* item = m_list_box->CurrentItem();
         if (item)
         {
             m_line_edit->Text(item->name);
-            SigValueChanged(SimpleType<ListItem*>(item));
+            SigValueChanged(SimpleType<Item*>(item));
         }
         else
         {
-            SigValueChanged(SimpleType<ListItem*>(nullptr));
+            SigValueChanged(SimpleType<Item*>(nullptr));
         }
     }
 

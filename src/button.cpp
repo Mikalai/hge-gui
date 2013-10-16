@@ -50,9 +50,12 @@ namespace Gui
     void Button::OnRepaint(RenderAdapter *r)
     {
         Widget::OnRepaint(r);
+        r->PushSate();
+        r->Translate(LocalX(), LocalY());
         r->SetColor(GetStyle().font_color[0], GetStyle().font_color[1], GetStyle().font_color[2]);
         r->SetAlpha(GetStyle().font_color[3]);
-        r->DrawTextLine(GlobalX(), GlobalY(), m_text);
+        r->DrawTextLine(0, 0, m_text);
+        r->PopState();
     }
 
     void Button::OnKeyDown(const Event &e)

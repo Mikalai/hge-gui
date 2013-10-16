@@ -31,18 +31,19 @@ namespace Gui
         Manager(HGE* hge);
         virtual ~Manager();
 
-        virtual void OnMouseMove(const Event& e) override;
-        virtual void OnMousePress(const Event& e) override;
-        virtual void OnMouseRelease(const Event& e) override;
-        virtual void OnMouseWheel(const Event& e) override;
-        virtual void OnKeyDown(const Event& e) override;
-        virtual void OnKeyUp(const Event& e) override;
+        void OnMouseMove(const Event& e) override;
+        void OnMousePress(const Event& e) override;
+        void OnMouseRelease(const Event& e) override;
+        void OnMouseWheel(const Event& e) override;
+        void OnKeyDown(const Event& e) override;
+        void OnKeyUp(const Event& e) override;
         bool GetKeyState(int key) override;
         bool GetMouseState(int key) override;
         int GetWindowWidth() override;
         int GetWindowHeight() override;
         void AddAnimation(Animation* value) override;
         void RemoveAnimation(Animation* value) override;
+        void SetFocused(Widget *w) override;
 
         void Add(Widget* value);
         void Remove(Widget* value);

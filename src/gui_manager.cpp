@@ -306,4 +306,15 @@ namespace Gui
         m_font = new HgeFont;
         return m_font->m_font;
     }
+
+    void Manager::SetFocused(Widget *w)
+    {
+        hgeInputEvent ee;   //  TODO: Make it nicer
+        Event e(ee);
+        if (m_focus)
+            m_focus->Unfocused(e);
+        m_focus = w;
+        if (m_focus)
+            m_focus->Focused(e);
+    }
 }

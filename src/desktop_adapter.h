@@ -32,6 +32,7 @@ namespace Gui
     };
 
     class Animation;
+    class Widget;
 
     class DesktopAdapter
     {
@@ -51,6 +52,7 @@ namespace Gui
         virtual void AddAnimation(Animation* value) = 0;
         virtual void RemoveAnimation(Animation* value) = 0;
         virtual FontAdapter* GetFont() = 0;
+        virtual void SetFocused(Widget* w) = 0;
     };
 }
 

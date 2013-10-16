@@ -28,7 +28,7 @@ namespace Gui
 
         void Update();
     private:
-        bool m_editable = false;
+        bool m_editable = true;
         bool m_need_update = true;
         std::vector<float> m_width_cache;
         int m_cursor_position = -1;

@@ -72,13 +72,16 @@ namespace Gui
     void TextLine::OnRepaint(RenderAdapter *r)
     {        
         Widget::OnRepaint(r);
+
+        r->PushSate();
+        r->Translate(LocalX(), LocalY());
         r->SetColor(GetStyle().font_color[0], GetStyle().font_color[1], GetStyle().font_color[2]);
         r->SetAlpha(GetStyle().font_color[3]);
 
         if (m_need_update)
             Update();
 
-        r->DrawTextLine(GlobalX(), GlobalY(), m_text.substr(m_visible_offset, m_visible_count));
+        r->DrawTextLine(0, 0, m_text.substr(m_visible_offset, m_visible_count));
 
         //  find cursor geometry
         if (m_editable && IsFocused())
@@ -88,8 +91,9 @@ namespace Gui
             {
                 x += m_width_cache[index];
             }
-            r->DrawLine(GlobalX() + x, GlobalY() + 1, GlobalX() + x, GlobalY() + GetManager()->GetFont()->GetCharacterHeight('I') - 1);
+            r->DrawLine(x, 1, x, GetManager()->GetFont()->GetCharacterHeight('I') - 1);
         }
+        r->PopState();
     }
 
     void TextLine::OnKeyDown(const Event &e)

@@ -2,21 +2,11 @@
 #define LIST_BOX_H
 
 #include "widget.h"
+#include "item.h"
 
 namespace Gui
 {
     class ScrollBar;
-
-    struct ListItem
-    {
-        ListItem(const std::string& _name, void* _data = nullptr)
-            : name(_name)
-            , data(_data)
-        {}
-
-        const std::string name;
-        void* data;
-    };
 
     class ListBox : public Widget
     {
@@ -24,14 +14,18 @@ namespace Gui
         ListBox(float x = 0, float y = 0, float width = 128, float height = 128, Widget* parent = nullptr);
         virtual ~ListBox();
 
-        void AddItem(ListItem* item);
-        void RemoveItem(ListItem* item);
+        void AddItem(Item* item);
+        void RemoveItem(Item* item);
         void AddItem(const std::string& name, void* data = nullptr);
         void AddItems(const std::vector<std::string>& value);
-        void SetStartItem(int index);
+        void SetStartItem(int index);        
 
-        ListItem* CurrentItem();
-        const ListItem* CurrentItem() const;
+        Item* CurrentItem();
+        const Item* CurrentItem() const;
+
+        void SetCurrentItem(int index);
+
+        void ResetSelection();
 
         Signal SigItemSelected;
 
@@ -48,7 +42,7 @@ namespace Gui
         int m_start_item = 0;
         int m_current_item = -1;
         int m_visible_count = 0;
-        std::vector<ListItem*> m_items;
+        std::vector<Item*> m_items;
     };
 }
 
